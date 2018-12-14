@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, FlatList } from 'react-native';
-import { ListItem, Header, Button, Right, Body, Input, Text } from 'native-base';
+import { ListItem, Header, Input, Item, Button, Right, Body, Icon, Text } from 'native-base';
 import axios from 'axios';
 
 export default class App extends React.Component {
@@ -10,8 +10,8 @@ export default class App extends React.Component {
       id:0,
       set:'',
       data:[],
-      btn: 'Save',
-      base_url:'http://192.168.0.26:5000/api/'
+      btn: 'add',
+      base_url:'https://restapi-crud.herokuapp.com/api/'
     }
   }
 
@@ -24,7 +24,7 @@ export default class App extends React.Component {
   }
 
   addTask(){
-    if(this.state.btn === 'Save'){
+    if(this.state.btn === 'add'){
       let itext = this.state.set;
       if(itext.length > 0){
         axios.post(this.state.base_url, { name: itext })
@@ -38,7 +38,7 @@ export default class App extends React.Component {
     } else {
       axios.put(this.state.base_url+this.state.id, { name: this.state.set})
       .then(response => {
-        this.setState({ set: '', btn: 'Save' })
+        this.setState({ set: '', btn: 'add' })
       })
       this.getTask();
     }
@@ -49,7 +49,7 @@ export default class App extends React.Component {
   }
 
   putTask(item){
-    this.setState({ set: item.name, btn: 'Update', id: item._id });
+    this.setState({ set: item.name, btn: 'checkmark', id: item._id });
   }
 
   delTask(item){
@@ -62,6 +62,10 @@ export default class App extends React.Component {
     // })
   }
 
+  Clear = () => {
+    this.setState({set:'', btn:'add'});
+  }
+
   componentDidMount(){
     this.getTask()
   }
@@ -70,18 +74,24 @@ export default class App extends React.Component {
     return(
       <View>
         <View>
-          <Header>
-            <Body>
+          <Header searchBar rounded transparent>
+            <Item>
               <Input
               onChangeText={(text)=>this.set(text)}
               value={this.state.set}
+              ref={input => { this.textInput = input }}
               placeholder='Type Here. . .'/>
-            </Body>
-            <Right>
-              <Button onPress={() => this.addTask()} >
-                <Text>{this.state.btn}</Text>
+              <Button 
+              small transparent
+              onPress={this.Clear} >
+                <Icon name='close' />
               </Button>
-            </Right>
+              <Button 
+              small rounded
+              onPress={() => this.addTask()} >
+                <Icon name={this.state.btn} />
+              </Button>
+            </Item>
           </Header>
         </View>
         <View>
